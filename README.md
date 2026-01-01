@@ -12,7 +12,9 @@ nmap -sV -sC <target ipt>
 
 
 nmap scan:
+
 PORT     STATE SERVICE VERSION
+
 21/tcp   open  ftp     vsftpd 3.0.3
 
 22/tcp   open  ssh     OpenSSH 7.2p2 Ubuntu 4ubuntu2.10 (Ubuntu Linux; protocol 2.0)
