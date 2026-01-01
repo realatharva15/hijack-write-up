@@ -1,5 +1,5 @@
-# Try Hack Me - Hijack Writeup
-# Room name: Hijack
+# Try Hack Me - Hijack Writeup 
+# Author: Atharva Bordavekar
 # Difficulty: Easy
 # Points: 60
 # Vulnerabilities: Cookie hijacking, RCE sanitization bypass, Path hijack 
