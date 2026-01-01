@@ -14,11 +14,13 @@ nmap -sV -sC <target ipt>
 nmap scan:
 PORT     STATE SERVICE VERSION
 21/tcp   open  ftp     vsftpd 3.0.3
+
 22/tcp   open  ssh     OpenSSH 7.2p2 Ubuntu 4ubuntu2.10 (Ubuntu Linux; protocol 2.0)
 | ssh-hostkey: 
 |   2048 94:ee:e5:23:de:79:6a:8d:63:f0:48:b8:62:d9:d7:ab (RSA)
 |   256 42:e9:55:1b:d3:f2:04:b6:43:b2:56:a3:23:46:72:c7 (ECDSA)
 |_  256 27:46:f6:54:44:98:43:2a:f0:59:ba:e3:b6:73:d3:90 (ED25519)
+
 80/tcp   open  http    Apache httpd 2.4.18 ((Ubuntu))
 |_http-server-header: Apache/2.4.18 (Ubuntu)
 | http-cookie-flags: 
@@ -26,6 +28,7 @@ PORT     STATE SERVICE VERSION
 |     PHPSESSID: 
 |_      httponly flag not set
 |_http-title: Home
+
 111/tcp  open  rpcbind 2-4 (RPC #100000)
 | rpcinfo: 
 |   program version    port/proto  service
@@ -49,6 +52,7 @@ PORT     STATE SERVICE VERSION
 |   100227  2,3         2049/tcp6  nfs_acl
 |   100227  2,3         2049/udp   nfs_acl
 |_  100227  2,3         2049/udp6  nfs_acl
+
 2049/tcp open  nfs     2-4 (RPC #100003)
 Service Info: OSs: Unix, Linux; CPE: cpe:/o:linux:linux_kernel
 
